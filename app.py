@@ -25,7 +25,8 @@ def render(*args):
         print(f'Processing failed: {exc}')
         raise gr.Error('Could not process this photo. Try a JPG or PNG.') from exc
 with gr.Blocks(title='SnapStudio | Smart Photo Booth') as app:
-    gr.HTML('<div class="hero"><div class="eyebrow">COMPUTER VISION / CREATIVE PLAY</div><h1>SnapStudio.</h1><p>A little personality. A photo worth keeping.</p><span class="pill">Runs locally on this laptop</span></div>')
+    gr.HTML('<div class="hero"><div class="eyebrow">COMPUTER VISION / CREATIVE PLAY</div><h1>SnapStudio.</h1><p>A little personality. A photo worth keeping.</p><span class="pill">Create your own photo</span></div>')
+    gr.Markdown("Photos are processed on the computer or server running this app. Temporary uploads and results may remain in its cache.")
     with gr.Row():
         with gr.Column():
             gr.Markdown('### 01 / Start with a photo')
@@ -52,5 +53,18 @@ with gr.Blocks(title='SnapStudio | Smart Photo Booth') as app:
     demo.click(sample,outputs=photo)
     create.click(render,[photo,accessory,effect,frame,caption,size,vertical],[result,status],concurrency_limit=1,api_name='create_photo')
     clear.click(lambda:(None,None,'Ready for the next guest.'),outputs=[photo,result,status])
-if __name__=='__main__':
-    app.launch(server_name='127.0.0.1',server_port=7860,share=False,inbrowser=True,theme=gr.themes.Base(primary_hue='violet',neutral_hue='slate',font=['Segoe UI','Arial','sans-serif']),css=CSS)
+if __name__ == "__main__":
+    on_spaces = bool(os.environ.get("SPACE_ID"))
+
+    app.launch(
+        server_name="0.0.0.0" if on_spaces else "127.0.0.1",
+        server_port=7860,
+        share=False,
+        inbrowser=not on_spaces,
+        theme=gr.themes.Base(
+            primary_hue="violet",
+            neutral_hue="slate",
+            font=["Segoe UI", "Arial", "sans-serif"],
+        ),
+        css=CSS,
+    )
